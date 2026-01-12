@@ -1,11 +1,99 @@
-project/
-│
-├── index.html          (Home Page)
-├── products.html       (Products Page)
-├── blog.html          (Blog Page)
-├── about.html         (About Page)
-├── contact.html       (Contact Page)
-├── css/
-│   └── styles.css     (Main Stylesheet)
-└── js/
-    └── script.js      (JavaScript)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RaphaMed | Professional Health & Wellness Solutions</title>
+  <meta name="description" content="RaphaMed provides professional, reliable health and wellness solutions built on trust, safety, and excellence." />
+  <meta name="keywords" content="RaphaMed, health services, wellness solutions, professional healthcare Canada" />
+  <meta name="author" content="RaphaMed Inc." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="#home" class="logo" aria-label="RaphaMed Home">
+      <img src="assets/logo-raphamed.png" alt="RaphaMed logo">
+    </a>
+    <nav class="main-nav" aria-label="Primary navigation">
+      <a href="#home">Home</a>
+      <a href="#products">Products</a>
+      <a href="#about">About</a>
+      <a href="#contact" class="btn-primary">Request Information</a>
+    </nav>
+    <div class="lang-switch">
+      <button data-lang="en">EN</button>
+      <button data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+<section id="home" class="hero">
+  <div class="hero-slider">
+    <div class="slide active"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+  </div>
+  <div class="hero-content container">
+    <h2 id="heroTitle">Professional Health & Wellness Solutions You Can Trust</h2>
+    <p id="heroText">Delivering dependable, ethical, and high-quality wellness solutions designed to protect and support communities.</p>
+    <div class="cta-group">
+      <a href="#contact" class="btn-primary" id="heroCTA">Request Information</a>
+      <a href="#contact" class="btn-secondary">Speak With Our Team</a>
+    </div>
+  </div>
+</section>
+<section id="products" class="section">
+  <div class="container">
+    <h2>Our Solutions</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <h3>Medical-Grade Supplies</h3>
+        <p>Professionally sourced, compliant healthcare supplies.</p>
+        <a href="#contact" class="btn-secondary">Schedule a Consultation</a>
+      </div>
+      <div class="product-card">
+        <h3>Wellness Support Services</h3>
+        <p>Solutions focused on prevention, safety, and care.</p>
+        <a href="#contact" class="btn-secondary">Schedule a Consultation</a>
+      </div>
+      <div class="product-card">
+        <h3>Custom Healthcare Solutions</h3>
+        <p>Tailored services for organizations and communities.</p>
+        <a href="#contact" class="btn-secondary">Schedule a Consultation</a>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="about" class="section alt">
+  <div class="container">
+    <h2>About RaphaMed</h2>
+    <p>RaphaMed exists to provide reliable, ethical, and professional health and wellness solutions grounded in integrity, accountability, and compassion.</p>
+    <a href="#contact" class="btn-secondary">Ask a Question</a>
+  </div>
+</section>
+<section id="contact" class="section">
+  <div class="container contact-layout">
+    <form class="contact-form">
+      <label>Name<input type="text" required></label>
+      <label>Email<input type="email" required></label>
+      <label>Message<textarea rows="4" required></textarea></label>
+      <button type="submit" class="btn-primary">Send Message</button>
+    </form>
+    <div class="contact-info">
+      <iframe src="https://www.google.com/maps?q=Toronto,Canada&output=embed" loading="lazy"></iframe>
+      <p><strong>Email:</strong> info@raphamed.com</p>
+      <p><strong>Location:</strong> Toronto, Ontario, Canada</p>
+    </div>
+  </div>
+</section>
+<footer class="site-footer">
+  <nav>
+    <a href="privacy.html">Privacy Policy</a> |
+    <a href="terms.html">Terms of Use</a> |
+    <a href="compliance.html">Compliance</a>
+  </nav>
+  <p>© <span id="year"></span> RaphaMed Inc.</p>
+</footer>
+<script src="js/script.js"></script>
+</body>
+</html>
