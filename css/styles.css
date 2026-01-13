@@ -1,10 +1,10 @@
 :root {
-  --primary:#0b1f33;
-  --secondary:#1f6aa5;
-  --light:#f4f6f8;
-  --radius:14px;
-}
+    --primary:#6D8CE8;
+--secondary:#FDC500;  --light:#f4f6f8;
+  --accent:#FF9770;}
 
+  --pink:#FF70A6;
+  --white:#FFFFFF;
 * { box-sizing:border-box; }
 
 body {
@@ -98,4 +98,174 @@ body {
   text-align:center;
   padding:30px;
   background:#fff;
+}
+
+/* ============================================
+   CAROUSEL / SLIDESHOW STYLES
+   ============================================ */
+
+.carousel, .slideshow, .hero-slider {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-slide, .slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease-in-out, visibility 0.6s;
+}
+
+.carousel-slide.active, .slide.active {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+.carousel-prev, .carousel-next, .prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--primary);
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.carousel-prev:hover, .carousel-next:hover, .prev:hover, .next:hover {
+  background: var(--secondary);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-prev, .prev {
+  left: 20px;
+}
+
+.carousel-next, .next {
+  right: 20px;
+}
+
+.carousel-dots, .dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.carousel-dot, .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.carousel-dot.active, .dot.active {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  transform: scale(1.2);
+}
+
+.carousel-dot:hover, .dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   SCROLL ANIMATIONS
+   ============================================ */
+
+.fade-in, .animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.fade-in-visible, .animate-on-scroll.animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   BUTTONS & INTERACTIVE ELEMENTS
+   ============================================ */
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(253, 197, 0, 0.3);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 151, 112, 0.3);
+}
+
+/* ============================================
+   HEADER SCROLL EFFECTS
+   ============================================ */
+
+header, .site-header, .main-header {
+  transition: all 0.3s ease;
+}
+
+header.scrolled, .site-header.scrolled, .main-header.scrolled {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+header.hidden, .site-header.hidden, .main-header.hidden {
+  transform: translateY(-100%);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media(max-width:768px){
+  .carousel-prev, .carousel-next, .prev, .next {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .carousel-prev, .prev {
+    left: 10px;
+  }
+  
+  .carousel-next, .next {
+    right: 10px;
+  }
 }
