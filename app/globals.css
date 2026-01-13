@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --medical-blue: #1B4965;
+  --clean-white: #F8F9FA;
+  --soft-green: #5FA777;
+  --warm-gold: #D4AF37;
+  --deep-teal: #1B4965;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: var(--clean-white);
+  color: #333;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  color: var(--medical-blue);
+  font-weight: 600;
+}
+
+a {
+  color: var(--medical-blue);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--soft-green);
+}
+
+button {
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--medical-blue);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: var(--deep-teal);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(27, 73, 101, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--soft-green);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.btn-secondary:hover {
+  background-color: #4e8f63;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(95, 167, 119, 0.3);
+}
