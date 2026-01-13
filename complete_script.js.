@@ -1,0 +1,344 @@
+document.addEventListener('DOMContentLoaded', () => {
+    initHeader();
+    initMobileMenu();
+    initScrollTriggers();
+    initCookieBanner();
+    initButtons();
+    initSearch();
+    initAccessibility();
+    new ShoppingCart();
+    new NewsletterSignup();
+    trackPageView();
+});
+
+/* 1. Header scroll behavior */
+function initHeader() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+}
+
+/* 2. Mobile menu toggle (only runs if markup exists) */
+function initMobileMenu() {
+    const hamburger = document.querySelector('.hamburger');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const overlay = document.querySelector('.mobile-menu-overlay');
+    const closeBtn = document.querySelector('.close-menu');
+    const mobileLinks = document.querySelectorAll('.mobile-menu a');
+
+    if (!hamburger || !mobileNav || !overlay || !closeBtn) return;
+
+    function toggleMenu() {
+        mobileNav.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+    }
+
+    hamburger.addEventListener('click', toggleMenu);
+    closeBtn.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+    mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
+}
+
+/* 3. Scroll animations with GSAP + ScrollTrigger */
+function initScrollTriggers() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.querySelectorAll('.product-card[data-animate]').forEach((card, i) => {
+        gsap.from(card, {
+            scrollTrigger: {
+                trigger: card,
+                start: 'top 80%',
+                toggleActions: 'play none none reverse'
+            },
+            duration: 0.8,
+            opacity: 0,
+            y: 40,
+            delay: i * 0.1
+        });
+    });
+
+    const aboutGrid = document.querySelector('.about-grid');
+    if (aboutGrid) {
+        const aboutContent = aboutGrid.querySelector('.about-content[data-animate]');
+        const aboutImage = aboutGrid.querySelector('.about-image[data-animate]');
+        if (aboutContent) {
+            gsap.from(aboutContent, {
+                scrollTrigger: { trigger: aboutGrid, start: 'top 60%' },
+                duration: 1,
+                opacity: 0,
+                x: -50
+            });
+        }
+        if (aboutImage) {
+            gsap.from(aboutImage, {
+                scrollTrigger: { trigger: aboutGrid, start: 'top 60%' },
+                duration: 1,
+                opacity: 0,
+                x: 50
+            });
+        }
+    }
+}
+
+/* 4. Cookie banner logic (expects existing HTML) */
+function initCookieBanner() {
+    const banner = document.getElementById('cookieBanner');
+    const floatBtn = document.getElementById('cookieFloatBtn');
+    if (!banner || !floatBtn) return;
+
+    const acceptBtn = banner.querySelector('.cookie-accept');
+    const rejectBtn = banner.querySelector('.cookie-reject');
+    const settingsBtn = banner.querySelector('.cookie-settings');
+    const closeBtn = banner.querySelector('.cookie-close');
+
+    const choice = localStorage.getItem('cookieChoice');
+    if (choice) {
+        banner.classList.add('hidden');
+        if (choice === 'accepted') floatBtn.classList.add('show');
+    }
+
+    acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('cookieChoice', 'accepted');
+        banner.classList.add('hidden');
+        floatBtn.classList.add('show');
+    });
+
+    rejectBtn.addEventListener('click', () => {
+        localStorage.setItem('cookieChoice', 'rejected');
+        banner.classList.add('hidden');
+    });
+
+    settingsBtn.addEventListener('click', () => {
+        console.log('Open cookie settings modal');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        banner.classList.add('hidden');
+    });
+
+    floatBtn.addEventListener('click', () => {
+        banner.classList.remove('hidden');
+        floatBtn.classList.remove('show');
+    });
+}
+
+/* 5. Generic button tracking */
+function initButtons() {
+    document.querySelectorAll('.btn, .btn-hdmz').forEach(btn => {
+        btn.addEventListener('click', () => {
+            trackEvent('button_click', { text: btn.textContent.trim() });
+        });
+    });
+}
+
+/* 6. Simple search modal */
+function initSearch() {
+    const trigger = document.getElementById('search-trigger');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', () => {
+        const modal = createSearchModal();
+        document.body.appendChild(modal);
+        const input = modal.querySelector('input');
+        input.focus();
+        trigger.setAttribute('aria-expanded', 'true');
+    });
+}
+
+function createSearchModal() {
+    const modal = document.createElement('div');
+    modal.className = 'search-modal';
+    modal.innerHTML = `
+        <div class="search-modal-content">
+            <button class="search-modal-close" aria-label="Close search">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="search-modal-input">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="search" placeholder="Search products..." aria-label="Search products">
+            </div>
+            <div class="search-modal-results"></div>
+        </div>
+    `;
+
+    const close = () => modal.remove();
+
+    modal.querySelector('.search-modal-close').addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    modal.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+    const input = modal.querySelector('input');
+    const results = modal.querySelector('.search-modal-results');
+    const products = Array.from(document.querySelectorAll('.product-card')).map(card => {
+        const name = card.querySelector('h3')?.textContent.trim();
+        const price = card.querySelector('.price')?.textContent.trim();
+        return { name, price };
+    });
+
+    input.addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        if (!q) {
+            results.innerHTML = '<p style="padding:20px;color:#999;text-align:center;">Start typing to search...</p>';
+            return;
+        }
+        const filtered = products.filter(p => p.name.toLowerCase().includes(q));
+        if (!filtered.length) {
+            results.innerHTML = '<p style="padding:20px;color:#999;text-align:center;">No products found</p>';
+            return;
+        }
+        results.innerHTML = filtered.map(p => `
+            <div class="search-result">
+                <div>${p.name}</div>
+                <div style="color:var(--accent-gold);">${p.price}</div>
+            </div>
+        `).join('');
+    });
+
+    return modal;
+}
+
+/* 7. Basic accessibility hook (placeholder) */
+function initAccessibility() {
+    // Reserved for future accessibility enhancements
+}
+
+/* 8. Shopping cart class */
+class ShoppingCart {
+    constructor() {
+        this.items = this.loadCart();
+        this.setupCartButtons();
+        this.updateCartCount();
+    }
+
+    setupCartButtons() {
+        document.querySelectorAll('[data-product-id]').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                const card = btn.closest('.product-card');
+                const id = btn.dataset.productId;
+                const name = card.querySelector('h3')?.textContent.trim();
+                const priceText = card.querySelector('.price')?.textContent.replace('$', '') || '0';
+                const price = parseFloat(priceText);
+                this.addItem({ id, name, price });
+            });
+        });
+    }
+
+    addItem(product) {
+        const existing = this.items.find(i => i.id === product.id);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            this.items.push({ ...product, quantity: 1 });
+        }
+        this.saveCart();
+        this.updateCartCount();
+        this.showNotification(`${product.name} added to cart`);
+    }
+
+    loadCart() {
+        try {
+            const raw = localStorage.getItem('wellness_cart');
+            return raw ? JSON.parse(raw) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    saveCart() {
+        localStorage.setItem('wellness_cart', JSON.stringify(this.items));
+    }
+
+    updateCartCount() {
+        const countEl = document.querySelector('.cart-count');
+        if (!countEl) return;
+        const count = this.items.reduce((sum, i) => sum + i.quantity, 0);
+        countEl.textContent = count;
+        countEl.style.display = count > 0 ? 'flex' : 'none';
+    }
+
+    showNotification(message) {
+        const toast = document.createElement('div');
+        toast.className = 'cart-notification';
+        toast.textContent = message;
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+}
+
+/* 9. Newsletter signup class */
+class NewsletterSignup {
+    constructor() {
+        this.form = document.querySelector('.newsletter-form');
+        if (this.form) this.init();
+    }
+
+    init() {
+        this.form.addEventListener('submit', e => this.handleSubmit(e));
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        const emailInput = this.form.querySelector('input[type="email"]');
+        const email = emailInput.value.trim();
+        if (!this.isValidEmail(email)) {
+            this.showFeedback('Please enter a valid email address.', 'error');
+            return;
+        }
+        console.log('Newsletter signup:', email);
+        this.showFeedback('Thanks for subscribing!', 'success');
+        this.form.reset();
+    }
+
+    isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    showFeedback(msg, type) {
+        const existing = this.form.parentElement.querySelector('.newsletter-feedback');
+        if (existing) existing.remove();
+        const p = document.createElement('p');
+        p.className = `newsletter-feedback ${type}`;
+        p.textContent = msg;
+        this.form.parentElement.appendChild(p);
+        setTimeout(() => p.remove(), 4000);
+    }
+}
+
+/* 10. Analytics helpers */
+function trackEvent(name, data = {}) {
+    const choice = localStorage.getItem('cookieChoice');
+    if (choice !== 'accepted') return;
+    console.log('Event:', name, data);
+    // integrate GA/other later
+}
+
+function trackPageView() {
+    trackEvent('page_view', {
+        title: document.title,
+        path: window.location.pathname
+    });
+}
