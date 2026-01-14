@@ -1,271 +1,187 @@
-:root {
-    --primary:#6D8CE8;
---secondary:#FDC500;  --light:#f4f6f8;
-  --accent:#FF9770;}
-
-  --pink:#FF70A6;
-  --white:#FFFFFF;
-* { box-sizing:border-box; }
-
-body {
-  margin:0;
-  font-family:system-ui, sans-serif;
-  color:#111;
+/* Accessibility helpers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
 
-.container {
-  max-width:1200px;
-  margin:auto;
-  padding:0 20px;
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--accent-orange);
+    outline-offset: 2px;
 }
 
-.site-header {
-  background:#fff;
-  border-bottom:1px solid #ddd;
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible) {
+    outline: none;
 }
 
-.header-inner {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:20px;
+/* Header actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
-.logo img { height:48px; }
-
-.main-nav a {
-  margin-left:16px;
-  text-decoration:none;
-  color:#111;
+.search-btn,
+.cart-btn {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: var(--text-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
 }
 
-.lang-switch button {
-  margin-left:8px;
+/* Cart badge */
+.cart-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--accent-orange);
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: none; /* shown via JS when count > 0 */
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.btn-primary {
-  background:var(--primary);
-  color:#fff;
-  padding:10px 16px;
-  border-radius:var(--radius);
-  text-decoration:none;
+/* Cart toast notification */
+.cart-notification {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    background-color: #333;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 999;
+    font-size: 14px;
 }
 
-.btn-secondary {
-  background:var(--secondary);
-  color:#fff;
-  padding:10px 16px;
-  border-radius:var(--radius);
-  text-decoration:none;
+.cart-notification.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.hero {
-  position:relative;
-  height:80vh;
-  color:#fff;
-  background:#0b1f33;
+/* Testimonials */
+.testimonials {
+    background-color: #FAFAFA;
+    padding: 60px 0;
 }
 
-.hero-content {
-  position:relative;
-  padding-top:120px;
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
 }
 
-.section {
-  padding:80px 0;
+.testimonial-card {
+    background-color: #fff;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: var(--transition-smooth);
 }
 
-.alt {
-  background:var(--light);
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.product-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:30px;
+.testimonial-stars {
+    color: var(--accent-gold);
+    margin-bottom: 16px;
 }
 
-.contact-layout {
-  display:grid;
-  gap:40px;
+.testimonial-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-style: italic;
+    color: var(--text-gray);
 }
 
-@media(min-width:768px){
-  .contact-layout{ grid-template-columns:1fr 1fr; }
+.testimonial-author .author-name {
+    font-weight: 600;
+    margin: 0;
 }
 
-.site-footer {
-  text-align:center;
-  padding:30px;
-  background:#fff;
+.testimonial-author .author-title {
+    font-size: 14px;
+    color: var(--text-gray);
+    margin: 0;
 }
 
-/* ============================================
-   CAROUSEL / SLIDESHOW STYLES
-   ============================================ */
-
-.carousel, .slideshow, .hero-slider {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
+/* Newsletter in footer */
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
 }
 
-.carousel-slide, .slide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.6s ease-in-out, visibility 0.6s;
+.newsletter-input {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 6px;
 }
 
-.carousel-slide.active, .slide.active {
-  opacity: 1;
-  visibility: visible;
-  position: relative;
+.newsletter-input input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: var(--font-body);
+    font-size: 14px;
 }
 
-.carousel-prev, .carousel-next, .prev, .next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 24px;
-  color: var(--primary);
-  z-index: 10;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+.newsletter-input button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-left: 10px;
+    color: var(--text-dark);
+    transition: var(--transition-fast);
 }
 
-.carousel-prev:hover, .carousel-next:hover, .prev:hover, .next:hover {
-  background: var(--secondary);
-  color: white;
-  transform: translateY(-50%) scale(1.1);
+.newsletter-input button:hover {
+    color: var(--accent-orange);
 }
 
-.carousel-prev, .prev {
-  left: 20px;
+.newsletter-hint {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 8px;
 }
 
-.carousel-next, .next {
-  right: 20px;
+.newsletter-feedback {
+    font-size: 13px;
+    margin-top: 8px;
 }
 
-.carousel-dots, .dots {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  z-index: 10;
+.newsletter-feedback.success {
+    color: #2e7d32;
 }
 
-.carousel-dot, .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-}
-
-.carousel-dot.active, .dot.active {
-  background: var(--secondary);
-  border-color: var(--secondary);
-  transform: scale(1.2);
-}
-
-.carousel-dot:hover, .dot:hover {
-  background: rgba(255, 255, 255, 0.8);
-}
-
-/* ============================================
-   SCROLL ANIMATIONS
-   ============================================ */
-
-.fade-in, .animate-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.fade-in.fade-in-visible, .animate-on-scroll.animated {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ============================================
-   BUTTONS & INTERACTIVE ELEMENTS
-   ============================================ */
-
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background: var(--secondary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(253, 197, 0, 0.3);
-}
-
-.btn-secondary {
-  background: var(--secondary);
-  color: #333;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-  background: var(--accent);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 151, 112, 0.3);
-}
-
-/* ============================================
-   HEADER SCROLL EFFECTS
-   ============================================ */
-
-header, .site-header, .main-header {
-  transition: all 0.3s ease;
-}
-
-header.scrolled, .site-header.scrolled, .main-header.scrolled {
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-header.hidden, .site-header.hidden, .main-header.hidden {
-  transform: translateY(-100%);
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-@media(max-width:768px){
-  .carousel-prev, .carousel-next, .prev, .next {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-  }
-  
-  .carousel-prev, .prev {
-    left: 10px;
-  }
-  
-  .carousel-next, .next {
-    right: 10px;
-  }
+.newsletter-feedback.error {
+    color: #c62828;
 }
