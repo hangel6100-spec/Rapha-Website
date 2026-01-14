@@ -281,13 +281,13 @@ export default function Header() {
   const isLinkActive = (href: string) => {
     return activeSection === href.replace('#', '')
   }
-
-  return (
-      <header
+return (
+  <header
     ref={headerRef}
     className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}
     role="banner"
   >
+
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 py-4" role="navigation" aria-label="Main navigation">
         <div className="flex items-center justify-between">
           
