@@ -1,101 +1,386 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
-export default function Header() {
+// Type definitions
+interface DropdownItem {
+  label: string
+  href: string
+}
+
+interface NavDropdownProps {
+  label: string
+  items: DropdownItem[]
+  isActive: boolean
+  onClose: () => void
+}
+
+// Dropdown data
+const productItems: DropdownItem[] = [
+  { label: 'Medical Devices', href: '#medical-devices' },
+  { label: 'Healthcare Solutions', href: '#healthcare-solutions' },
+  { label: 'Medical Supplies', href: '#medical-supplies' },
+]
+
+const aboutItems: DropdownItem[] = [
+  { label: 'Company', href: '#company' },
+  { label: 'Certifications', href: '#certifications' },
+]
+
+// Dropdown Component
+function NavDropdown({ label, items, isActive, onClose }: NavDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsOpen(false)
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      setIsOpen(!isOpen)
+    } else if (e.key === 'ArrowDown' && isOpen) {
+      e.preventDefault()
+      const firstItem = dropdownRef.current?.querySelector('a')
+      firstItem?.focus()
+    }
+  }
+
+  // Hover handlers with delay for better UX
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setIsOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setIsOpen(false), 150)
+  }
+
+  return (
+    <div 
+      className="relative" 
+      ref={dropdownRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <button 
+        className={`flex items-center font-medium transition-colors ${
+          isActive 
+            ? 'text-[#1B4965]' 
+            : 'text-gray-700 hover:text-[#1B4965]'
+        }`}
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleKeyDown}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        {label}
+        <svg 
+          className={`w-4 h-4 ml-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      {/* Dropdown Menu */}
+      <div 
+        className={`absolute left-0 mt-2 w-52 bg-white rounded-lg shadow-xl border border-gray-100 
+          transition-all duration-200 transform origin-top
+          ${isOpen 
+            ? 'opacity-100 visible scale-100 translate-y-0' 
+            : 'opacity-0 invisible scale-95 -translate-y-2'
+          }`}
+        role="menu"
+        aria-orientation="vertical"
+      >
+        <div className="py-2">
+          {items.map((item, index) => (
+            <a 
+              key={item.href}
+              href={item.href} 
+              className="block px-4 py-2.5 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965] 
+                transition-colors focus:outline-none focus:bg-[#F8F9FA] focus:text-[#1B4965]"
+              role="menuitem"
+              tabIndex={isOpen ? 0 : -1}
+              onClick={() => {
+                setIsOpen(false)
+                onClose()
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setIsOpen(false)
+                }
+              }}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Mobile Dropdown Component
+function MobileDropdown({ label, items, onItemClick }: { 
+  label: string
+  items: DropdownItem[]
+  onItemClick: () => void 
+}) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-6 py-4">
+    <div className="border-b border-gray-100 last:border-b-0">
+      <button
+        className="w-full flex items-center justify-between py-3 text-gray-700 hover:text-[#1B4965] font-medium"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+      >
+        {label}
+        <svg 
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      {/* Submenu with animation */}
+      <div 
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="pl-4 pb-3 space-y-2">
+          {items.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="block py-2 text-gray-600 hover:text-[#1B4965] transition-colors"
+              onClick={onItemClick}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main Header Component
+export default function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('home')
+  const [isScrolled, setIsScrolled] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
+
+  // Close mobile menu
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false)
+  }, [])
+
+  // Toggle mobile menu
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev)
+  }, [])
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMobileMenuOpen])
+
+  // Handle scroll for header shadow and active section
+  useEffect(() => {
+    const handleScroll = () => {
+      // Add shadow when scrolled
+      setIsScrolled(window.scrollY > 10)
+
+      // Determine active section based on scroll position
+      const sections = ['home', 'products', 'about', 'contact']
+      for (const section of sections) {
+        const element = document.getElementById(section)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          if (rect.top <= 100 && rect.bottom >= 100) {
+            setActiveSection(section)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isMobileMenuOpen, closeMobileMenu])
+
+  // Close mobile menu on window resize (if switching to desktop)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && isMobileMenuOpen) {
+        closeMobileMenu()
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [isMobileMenuOpen, closeMobileMenu])
+
+  // Check if link is active
+  const isLinkActive = (href: string) => {
+    return activeSection === href.replace('#', '')
+  }
+
+  return (
+    <header 
+      ref={headerRef}
+      className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${
+        isScrolled ? 'shadow-lg' : 'shadow-md'
+      }`}
+      role="banner"
+    >
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 py-4" role="navigation" aria-label="Main navigation">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Image 
-              src="/assets/cropped_circle_image (1).png" 
-              alt="RaphaMed Logo" 
-              width={50} 
-              height={50}
-              className="rounded-full"
-            />
-            <span className="ml-3 text-2xl font-bold text-[#1B4965]">RaphaMed</span>
-          </div>
+          
+          {/* Logo - Now Clickable */}
+          <Link 
+            href="/" 
+            className="flex items-center group focus:outline-none focus:ring-2 focus:ring-[#1B4965] focus:ring-offset-2 rounded-lg"
+            aria-label="RaphaMed - Go to homepage"
+          >
+            <div className="relative overflow-hidden rounded-full">
+              <Image 
+                src="/assets/cropped_circle_image (1).png" 
+                alt="" 
+                width={50} 
+                height={50}
+                className="rounded-full transition-transform duration-300 group-hover:scale-110"
+                priority
+              />
+            </div>
+            <span className="ml-3 text-2xl font-bold text-[#1B4965] group-hover:text-[#2d6a8a] transition-colors">
+              RaphaMed
+            </span>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-gray-700 hover:text-[#1B4965] font-medium transition-colors">
+            <a 
+              href="#home" 
+              className={`font-medium transition-colors relative ${
+                isLinkActive('#home') 
+                  ? 'text-[#1B4965]' 
+                  : 'text-gray-700 hover:text-[#1B4965]'
+              }`}
+            >
               Home
+              {isLinkActive('#home') && (
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#5FA777] rounded-full" />
+              )}
             </a>
-            <div className="relative group">
-              <button className="text-gray-700 hover:text-[#1B4965] font-medium transition-colors flex items-center">
-                Products
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <a href="#medical-devices" className="block px-4 py-2 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965]">Medical Devices</a>
-                <a href="#healthcare-solutions" className="block px-4 py-2 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965]">Healthcare Solutions</a>
-                <a href="#medical-supplies" className="block px-4 py-2 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965]">Medical Supplies</a>
-              </div>
-            </div>
-            <div className="relative group">
-              <button className="text-gray-700 hover:text-[#1B4965] font-medium transition-colors flex items-center">
-                About
-                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <a href="#company" className="block px-4 py-2 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965]">Company</a>
-                <a href="#certifications" className="block px-4 py-2 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965]">Certifications</a>
-              </div>
-            </div>
-            <a href="#contact" className="text-gray-700 hover:text-[#1B4965] font-medium transition-colors">
+            
+            <NavDropdown 
+              label="Products" 
+              items={productItems}
+              isActive={isLinkActive('#products')}
+              onClose={() => {}}
+            />
+            
+            <NavDropdown 
+              label="About" 
+              items={aboutItems}
+              isActive={isLinkActive('#about')}
+              onClose={() => {}}
+            />
+            
+            <a 
+              href="#contact" 
+              className={`font-medium transition-colors relative ${
+                isLinkActive('#contact') 
+                  ? 'text-[#1B4965]' 
+                  : 'text-gray-700 hover:text-[#1B4965]'
+              }`}
+            >
               Contact
+              {isLinkActive('#contact') && (
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#5FA777] rounded-full" />
+              )}
             </a>
-            <button className="bg-[#5FA777] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#4e8f63] transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
+            
+            <button 
+              className="bg-[#5FA777] text-white px-6 py-2.5 rounded-lg font-semibold 
+                hover:bg-[#4e8f63] transition-all duration-300 
+                hover:transform hover:-translate-y-0.5 hover:shadow-lg
+                focus:outline-none focus:ring-2 focus:ring-[#5FA777] focus:ring-offset-2
+                active:transform active:translate-y-0"
+              aria-label="Request a quote"
+            >
               Get Quote
             </button>
           </div>
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-gray-700"
-            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 text-gray-700 hover:text-[#1B4965] hover:bg-gray-100 
+              rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4965]"
+            onClick={toggleMobileMenu}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-3">
-            <a href="#home" className="block text-gray-700 hover:text-[#1B4965] font-medium">
-              Home
-            </a>
-            <a href="#products" className="block text-gray-700 hover:text-[#1B4965] font-medium">
-              Products
-            </a>
-            <a href="#about" className="block text-gray-700 hover:text-[#1B4965] font-medium">
-              About
-            </a>
-            <a href="#contact" className="block text-gray-700 hover:text-[#1B4965] font-medium">
-              Contact
-            </a>
-            <button className="w-full bg-[#5FA777] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#4e8f63] transition-colors">
-              Get Quote
-            </button>
-          </div>
-        )}
-      </nav>
-    </header>
-  )
-}
+            <svg 
+              className="w-6 h-6 transition-transform duration-200" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              {isMobileMenuOpen ? (
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M6 18L18 6M6 6l12 12" 
