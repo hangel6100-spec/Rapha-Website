@@ -1,7 +1,39 @@
+/* CSS Custom Properties */
 :root {
-  height: 72px;
+  --accent-orange: #ff6b35;
+  --font-heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --text-gray: #666666;
+  --border-light: #dddddd;
+  --max-width: 1200px;
+  --header-height: 72px;
+  --white: #ffffff;
+  --black: #000000;
 }
 
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-heading);
+  line-height: 1.6;
+  color: var(--black);
+}
+
+/* Header */
+header {
+  height: var(--header-height);
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  background-color: var(--white);
+  z-index: 100;
+}
+
+/* Navigation */
 .main-nav {
   display: flex;
   align-items: center;
@@ -11,30 +43,63 @@
 
 .main-nav a {
   padding: 0.25rem 0;
+  text-decoration: none;
+  color: var(--black);
+  transition: color 0.3s ease;
 }
 
+.main-nav a:hover {
+  color: var(--accent-orange);
+}
+
+/* Buttons */
 .btn-primary {
   padding: 0.5rem 1rem;
   border-radius: 999px;
   border: none;
   background-color: var(--accent-orange);
-  color: #fff;
+  color: var(--white);
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
+.btn-primary:hover {
+  background-color: #ff5722;
+}
+
+/* Language Switch */
 .lang-switch button {
   border: 1px solid var(--border-light);
-  background: #fff;
+  background: var(--white);
   padding: 0.25rem 0.5rem;
   margin-left: 0.25rem;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* Hero */
+.lang-switch button:hover {
+  background-color: #f5f5f5;
+}
+
+.lang-switch button.active {
+  background-color: var(--accent-orange);
+  color: var(--white);
+  border-color: var(--accent-orange);
+}
+
+/* Container */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Hero Section */
 .hero {
   position: relative;
   padding: 4rem 0 3rem;
+  overflow: hidden;
 }
 
 .hero-slider {
@@ -52,11 +117,13 @@
   font-family: var(--font-heading);
   font-size: 2rem;
   margin-bottom: 0.75rem;
+  font-weight: 700;
 }
 
 .hero p {
   color: var(--text-gray);
   margin: 0;
+  font-size: 1.1rem;
 }
 
 /* Sections */
@@ -67,6 +134,7 @@
 .section-title {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .section-intro {
@@ -75,9 +143,89 @@
   margin-bottom: 2rem;
 }
 
-/* Products */
+/* Products Grid */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.product-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 1rem;
+}
+
+.product-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.product-price {
+  color: var(--accent-orange);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Footer */
+footer {
+  background-color: #f8f8f8;
+  padding: 2rem 0;
+  margin-top: 4rem;
+  border-top: 1px solid var(--border-light);
+}
+
+footer p {
+  text-align: center;
+  color: var(--text-gray);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero h2 {
+    font-size: 1.5rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .section {
+    padding: 2rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-nav {
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
 }
