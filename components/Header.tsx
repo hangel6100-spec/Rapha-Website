@@ -1,17 +1,9 @@
 'use client'
 
-import React from 'react'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-// Type definitions
-interface DropdownItem {
-  label: string
-  href: string
-}
-import Image from 'next/image'
-import Link from 'next/link'
 // Type definitions
 interface DropdownItem {
   label: string
@@ -23,6 +15,12 @@ interface NavDropdownProps {
   items: DropdownItem[]
   isActive: boolean
   onClose: () => void
+}
+
+interface MobileDropdownProps {
+  label: string
+  items: DropdownItem[]
+  onItemClick: () => void
 }
 
 // Dropdown data
@@ -37,13 +35,12 @@ const aboutItems: DropdownItem[] = [
   { label: 'Certifications', href: '#certifications' },
 ]
 
-// Dropdown Component
+// Desktop Dropdown Component
 function NavDropdown({ label, items, isActive, onClose }: NavDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -55,21 +52,15 @@ function NavDropdown({ label, items, isActive, onClose }: NavDropdownProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsOpen(false)
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       setIsOpen(!isOpen)
-    } else if (e.key === 'ArrowDown' && isOpen) {
-      e.preventDefault()
-      const firstItem = dropdownRef.current?.querySelector('a')
-      firstItem?.focus()
     }
   }
 
-  // Hover handlers with delay for better UX
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     setIsOpen(true)
@@ -109,7 +100,6 @@ function NavDropdown({ label, items, isActive, onClose }: NavDropdownProps) {
         </svg>
       </button>
       
-      {/* Dropdown Menu */}
       <div 
         className={`absolute left-0 mt-2 w-52 bg-white rounded-lg shadow-xl border border-gray-100 
           transition-all duration-200 transform origin-top
@@ -118,25 +108,17 @@ function NavDropdown({ label, items, isActive, onClose }: NavDropdownProps) {
             : 'opacity-0 invisible scale-95 -translate-y-2'
           }`}
         role="menu"
-        aria-orientation="vertical"
       >
         <div className="py-2">
-          {items.map((item, index) => (
+          {items.map((item) => (
             <a 
               key={item.href}
               href={item.href} 
-              className="block px-4 py-2.5 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965] 
-                transition-colors focus:outline-none focus:bg-[#F8F9FA] focus:text-[#1B4965]"
+              className="block px-4 py-2.5 text-gray-700 hover:bg-[#F8F9FA] hover:text-[#1B4965] transition-colors"
               role="menuitem"
-              tabIndex={isOpen ? 0 : -1}
               onClick={() => {
                 setIsOpen(false)
                 onClose()
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setIsOpen(false)
-                }
               }}
             >
               {item.label}
@@ -149,15 +131,11 @@ function NavDropdown({ label, items, isActive, onClose }: NavDropdownProps) {
 }
 
 // Mobile Dropdown Component
-function MobileDropdown({ label, items, onItemClick }: { 
-  label: string
-  items: DropdownItem[]
-  onItemClick: () => void 
-}) {
+function MobileDropdown({ label, items, onItemClick }: MobileDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="border-b border-gray-100 last:border-b-0">
+    <div className="border-b border-gray-100">
       <button
         className="w-full flex items-center justify-between py-3 text-gray-700 hover:text-[#1B4965] font-medium"
         onClick={() => setIsOpen(!isOpen)}
@@ -175,7 +153,6 @@ function MobileDropdown({ label, items, onItemClick }: {
         </svg>
       </button>
       
-      }
       <div 
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
@@ -205,14 +182,12 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
 
-  // Close mobile menu
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false)
   }, [])
 
-  // Toggle mobile menu
   const toggleMobileMenu = useCallback(() => {
-    setIsMobileMenuOpen(prev => !prev)
+    setIsMobileMenuOpen((prev) => !prev)
   }, [])
 
   // Lock body scroll when mobile menu is open
@@ -222,20 +197,16 @@ export default function Header() {
     } else {
       document.body.style.overflow = ''
     }
-
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = ''
     }
   }, [isMobileMenuOpen])
 
-  // Handle scroll for header shadow and active section
+  // Handle scroll for shadow and active section
   useEffect(() => {
     const handleScroll = () => {
-      // Add shadow when scrolled
       setIsScrolled(window.scrollY > 10)
 
-      // Determine active section based on scroll position
       const sections = ['home', 'products', 'about', 'contact']
       for (const section of sections) {
         const element = document.getElementById(section)
@@ -265,7 +236,7 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isMobileMenuOpen, closeMobileMenu])
 
-  // Close mobile menu on window resize (if switching to desktop)
+  // Close mobile menu on window resize
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768 && isMobileMenuOpen) {
@@ -278,115 +249,12 @@ export default function Header() {
   }, [isMobileMenuOpen, closeMobileMenu])
 
   // Check if link is active
-  const isLinkActive = (href: string) => {
+  const isLinkActive = (href: string): boolean => {
     return activeSection === href.replace('#', '')
   }
-return (
-  <header
-    ref={headerRef}
-    className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}
-    role="banner"
-  >
 
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 py-4" role="navigation" aria-label="Main navigation">
-        <div className="flex items-center justify-between">
-          
-          {/* Logo - Now Clickable */}
-          <Link 
-            href="/" 
-            className="flex items-center group focus:outline-none focus:ring-2 focus:ring-[#1B4965] focus:ring-offset-2 rounded-lg"
-            aria-label="RaphaMed - Go to homepage"
-          >
-            <div className="relative overflow-hidden rounded-full">
-              <Image 
-                src="/assets/cropped_circle_image (1).png" 
-                alt="" 
-                width={50} 
-                height={50}
-                className="rounded-full transition-transform duration-300 group-hover:scale-110"
-                priority
-              />
-            </div>
-            <span className="ml-3 text-2xl font-bold text-[#1B4965] group-hover:text-[#2d6a8a] transition-colors">
-              RaphaMed
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a 
-              href="#home" 
-              className={`font-medium transition-colors relative ${
-                isLinkActive('#home') 
-                  ? 'text-[#1B4965]' 
-                  : 'text-gray-700 hover:text-[#1B4965]'
-              }`}
-            >
-              Home
-              {isLinkActive('#home') && (
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#5FA777] rounded-full" />
-              )}
-            </a>
-            
-            <NavDropdown 
-              label="Products" 
-              items={productItems}
-              isActive={isLinkActive('#products')}
-              onClose={() => {}}
-            />
-            
-            <NavDropdown 
-              label="About" 
-              items={aboutItems}
-              isActive={isLinkActive('#about')}
-              onClose={() => {}}
-            />
-            
-            <a 
-              href="#contact" 
-              className={`font-medium transition-colors relative ${
-                isLinkActive('#contact') 
-                  ? 'text-[#1B4965]' 
-                  : 'text-gray-700 hover:text-[#1B4965]'
-              }`}
-            >
-              Contact
-              {isLinkActive('#contact') && (
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#5FA777] rounded-full" />
-              )}
-            </a>
-            
-            <button 
-              className="bg-[#5FA777] text-white px-6 py-2.5 rounded-lg font-semibold 
-                hover:bg-[#4e8f63] transition-all duration-300 
-                hover:transform hover:-translate-y-0.5 hover:shadow-lg
-                focus:outline-none focus:ring-2 focus:ring-[#5FA777] focus:ring-offset-2
-                active:transform active:translate-y-0"
-              aria-label="Request a quote"
-            >
-              Get Quote
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden p-2 text-gray-700 hover:text-[#1B4965] hover:bg-gray-100 
-              rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4965]"
-            onClick={toggleMobileMenu}
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
-            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-          >
-            <svg 
-              className="w-6 h-6 transition-transform duration-200" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              {isMobileMenuOpen ? (
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M6 18L18 6M6 6l12 12" 
+  return (
+    <header
+      ref={headerRef}
+      className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${
+        isScrolled ? 
