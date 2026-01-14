@@ -360,18 +360,33 @@ const init = () => {
   console.log('✅ All systems ready!');
 };
 
+// ✅ FIXED - Removed extra };
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
 }
+
+// Language switcher (add translations object)
+const translations = {
+  en: {
+    title: "Welcome to Our Company",
+    cta: "Get Started"
+  },
+  es: {
+    title: "Bienvenido a Nuestra Empresa",
+    cta: "Comenzar"
+  }
+  // Add more languages as needed
 };
 
 document.querySelectorAll("[data-lang]").forEach(btn => {
   btn.addEventListener("click", () => {
     const lang = btn.dataset.lang;
     document.documentElement.lang = lang;
-    document.getElementById("heroTitle").textContent = translations[lang].title;
-    document.getElementById("heroCTA").textContent = translations[lang].cta;
+    const titleEl = document.getElementById("heroTitle");
+    const ctaEl = document.getElementById("heroCTA");
+    if (titleEl) titleEl.textContent = translations[lang].title;
+    if (ctaEl) ctaEl.textContent = translations[lang].cta;
   });
 });
