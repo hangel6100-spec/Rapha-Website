@@ -1,6 +1,6 @@
 <!-- Header Banner -->
 <div align="center">
-  <img src="public/assets/cropped_circle_image (1).png" alt="RaphaMed Logo" width="120" height="120" style="border-radius: 50%;">
+  <img src="public/assets/email logo.png" alt="RaphaMed Logo" width="120" height="120" style="border-radius: 50%;">
   
   # RaphaMed Corporate Website
   
