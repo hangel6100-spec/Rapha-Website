@@ -175,7 +175,7 @@ function MobileDropdown({ label, items, onItemClick }: {
         </svg>
       </button>
       
-      {/* Submenu with animation */}
+      }
       <div 
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
