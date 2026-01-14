@@ -283,7 +283,7 @@ export default function Header() {
   }
 return (
   <header
-    ref={headerRef}
+    ref={headerRef
     className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}
     role="banner"
   >
