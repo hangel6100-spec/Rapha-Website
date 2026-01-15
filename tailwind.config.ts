@@ -3,12 +3,11 @@ import defaultTheme from 'tailwindcss/defaultTheme'
 
 const config: Config = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/**/*.{js,ts,jsx,tsx,mdx}', // Added src directory
-    './public/**/*.html', // Added for any HTML in public
-  ],
+  './pages/**/*.{js,ts,jsx,tsx,mdx}',
+  './components/**/*.{js,ts,jsx,tsx,mdx}',
+  './app/**/*.{js,ts,jsx,tsx,mdx}',
+  './src/**/*.{js,ts,jsx,tsx,mdx}',
+]
   darkMode: 'class', // Enable dark mode with class strategy
   theme: {
     extend: {
